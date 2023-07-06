@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.17;
 
-contract Proxy {
+contract UUPSProxy {
     address public implementation;
+    address public owner;
+    string public flag;
 
     constructor(address _implementation) {
         implementation = _implementation;
+        owner = msg.sender;
     }
 
     fallback() external {
@@ -30,13 +33,5 @@ contract Proxy {
                 return(0, returndatasize())
             }
         }
-    }
-
-    function getStorageAt(uint8 position) public view returns (bytes32) {
-        bytes32 result;
-        assembly {
-            result := sload(position)
-        }
-        return result;
     }
 }
