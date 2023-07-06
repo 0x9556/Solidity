@@ -10,6 +10,7 @@ contract Proxy {
 
     fallback() external {
         address _implementation = implementation;
+
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(
@@ -29,5 +30,13 @@ contract Proxy {
                 return(0, returndatasize())
             }
         }
+    }
+
+    function getStorageAt(uint8 position) public view returns (bytes32) {
+        bytes32 result;
+        assembly {
+            result := sload(position)
+        }
+        return result;
     }
 }
