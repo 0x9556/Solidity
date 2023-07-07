@@ -2,27 +2,6 @@
 pragma solidity ^0.8.17;
 
 contract VerifySignature {
-    function getMessageHash(
-        address _to,
-        uint _amount,
-        string memory _message,
-        uint _nonce
-    ) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_to, _amount, _message, _nonce));
-    }
-
-    function getEthSignedMessage(
-        bytes32 _messageHash
-    ) public pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    _messageHash
-                )
-            );
-    }
-
     function verify(
         address _to,
         uint _amount,
@@ -39,14 +18,14 @@ contract VerifySignature {
     function recoverSigner(
         bytes32 _ethSignedHash,
         bytes memory _signature
-    ) internal pure returns (address) {
+    ) private pure returns (address) {
         (bytes32 r, bytes32 s, uint8 v) = splitSignature(_signature);
         return ecrecover(_ethSignedHash, v, r, s);
     }
 
     function splitSignature(
         bytes memory _signature
-    ) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
+    ) private pure returns (bytes32 r, bytes32 s, uint8 v) {
         require(_signature.length == 65, "invalid signature length");
         assembly {
             r := mload(add(_signature, 32))
@@ -54,4 +33,27 @@ contract VerifySignature {
             v := byte(0, mload(add(_signature, 96)))
         }
     }
+
+    function getMessageHash(
+        address _to,
+        uint _amount,
+        string memory _message,
+        uint _nonce
+    ) public pure returns (bytes32) {
+        bytes memory data = abi.encodePacked(_to, _amount, _message, _nonce);
+        return keccak256(data);
+    }
+
+    function getEthSignedMessage(
+        bytes32 _messageHash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked(
+                    "\x19Ethereum Signed Message:\n32",
+                    _messageHash
+                )
+            );
+    }
 }
+

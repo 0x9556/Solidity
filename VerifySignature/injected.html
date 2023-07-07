@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.6.2/ethers.umd.js"
+            integrity="sha512-xRLhU6ytkazpYTgX6jB3iX2GQcNr90Hm4G8fGN0XxCB+OnVOHC9GeVFBdAIPC7VOcbbuD3DfxmvI8KUDQYdexw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script>
+            const {
+                BrowserProvider,
+                solidityPackedKeccak256,
+                solidityPacked,
+                keccak256
+            } = ethers
+            const provider = new BrowserProvider(window.ethereum)
+
+            async function sig() {
+                const signer = await provider.getSigner()
+                const message = solidityPacked(
+                    ['address', 'uint', 'uint', 'string'],
+                    ['0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 100, 1, 'hello']
+                )
+                console.log(message)
+                const signature = await signer.signMessage(message)
+                console.log(signature)
+            }
+        </script>
+    </body>
+</html>
