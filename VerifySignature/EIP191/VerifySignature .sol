@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.17;
 
+
 contract VerifySignature {
+
+    event Log(bytes32 ethSignedHash);
+
     function verify(
         address _to,
         uint _amount,
@@ -9,9 +13,10 @@ contract VerifySignature {
         uint _nonce,
         address _signer,
         bytes memory _signature
-    ) external pure returns (bool) {
+    ) external returns (bool) {
         bytes32 messageHash = getMessageHash(_to, _amount, _message, _nonce);
         bytes32 ethSignedHash = getEthSignedMessage(messageHash);
+        emit Log(ethSignedHash);
         return recoverSigner(ethSignedHash, _signature) == _signer;
     }
 
@@ -54,6 +59,15 @@ contract VerifySignature {
                     _messageHash
                 )
             );
+    }
+
+    function getMessage(
+        address _to,
+        uint _amount,
+        string memory _message,
+        uint _nonce
+    ) public pure returns (bytes memory data) {
+        data = abi.encodePacked(_to, _amount, _message, _nonce);
     }
 }
 

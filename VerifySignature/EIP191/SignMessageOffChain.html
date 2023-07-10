@@ -14,22 +14,16 @@
             referrerpolicy="no-referrer"
         ></script>
         <script>
-            const {
-                BrowserProvider,
-                solidityPackedKeccak256,
-                solidityPacked,
-                keccak256
-            } = ethers
+            const { BrowserProvider, solidityPackedKeccak256, getBytes } = ethers
             const provider = new BrowserProvider(window.ethereum)
 
             async function sig() {
                 const signer = await provider.getSigner()
-                const message = solidityPacked(
-                    ['address', 'uint', 'uint', 'string'],
-                    ['0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 100, 1, 'hello']
+                const message = solidityPackedKeccak256(
+                    ['address', 'uint', 'string', 'uint'],
+                    ['0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 100, 'hello', 1]
                 )
-                console.log(message)
-                const signature = await signer.signMessage(message)
+                const signature = await signer.signMessage(getBytes(message))
                 console.log(signature)
             }
         </script>
