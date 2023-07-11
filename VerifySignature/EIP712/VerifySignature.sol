@@ -2,33 +2,33 @@
 pragma solidity ^0.8.17;
 
 contract VerifySignature {
-    bytes32 private constant EIP712DOMIN_TYPEHASH =
+    bytes32 private constant EIP712DOMAIN_TYPEHASH =
         keccak256(
-            "EIP712Domin(string name,string version,uint256 chainId,address verifyingContract)"
+            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
         );
 
-    bytes32 private constant APPROVE_TYPEHASH =
-        keccak256("Approve(address spender,uint256 value)");
+    bytes32 private constant MESSAGE_TYPEHASH =
+        keccak256("Message(string message,uint256 value)");
 
-    bytes32 private DOMIN_SEPERATOR;
+    bytes32 private DOMAIN_SEPERATOR;
 
+    uint256 public number;
     address private owner;
-    uint public number;
 
-    constructor() {
-        DOMIN_SEPERATOR = keccak256(
+    constructor(address _owner) {
+        DOMAIN_SEPERATOR = keccak256(
             abi.encode(
-                EIP712DOMIN_TYPEHASH,
-                keccak256(bytes("EIP712")),
+                EIP712DOMAIN_TYPEHASH,
+                keccak256(bytes("VerifySig")),
                 keccak256(bytes("1")),
-                block.chainid,
+                1,
                 address(this)
             )
         );
-        owner = msg.sender;
+        owner = _owner;
     }
 
-    function permitApprove(uint value, bytes memory signature) external {
+    function permitApprove(uint256 _number, bytes memory signature) external returns(address signer) {
         require(signature.length == 65, "INVALID SIGNATURE LENGTH");
         bytes32 r;
         bytes32 s;
@@ -42,14 +42,16 @@ contract VerifySignature {
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
-                DOMIN_SEPERATOR,
-                keccak256(abi.encode(APPROVE_TYPEHASH, address(this), value))
+                DOMAIN_SEPERATOR,
+                keccak256(
+                    abi.encode(MESSAGE_TYPEHASH, keccak256(bytes("hello")), 100)
+                )
             )
         );
 
-        address signer = ecrecover(digest, v, r, s);
+        signer = ecrecover(digest, v, r, s);
 
-        require(signer == msg.sender, "INVALID SIGNATURE");
-        number = value;
+        require(signer == owner, "INVALID SIGNATURE");
+        number = _number;
     }
 }

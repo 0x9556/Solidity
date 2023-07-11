@@ -17,26 +17,26 @@
             const { BrowserProvider, signTypedData } = ethers
             const provider = new BrowserProvider(window.ethereum)
 
-            async function sig() {
+            async function sig(verifyingContract) {
                 const signer = await provider.getSigner()
 
                 const domain = {
-                    name: 'EIP712',
+                    name: 'VerifySig',
                     version: '1',
-                    chainId: '1',
-                    verifyingContract: '0xf8e81D47203A594245E36C48e151709F0C19fBe8'
+                    chainId: 1,
+                    verifyingContract
                 }
 
                 const types = {
-                    Approve: [
-                        { name: 'spender', type: 'address' },
+                    Message: [
+                        { name: 'message', type: 'string' },
                         { name: 'value', type: 'uint256' }
                     ]
                 }
 
                 const message = {
-                    spender: '0x5B38Da6a701c568545dCfcB03FcB875f56beddC4',
-                    value: '100'
+                    message:'hello',
+                    value:100
                 }
 
                 const signature = await signer.signTypedData(domain, types, message)
