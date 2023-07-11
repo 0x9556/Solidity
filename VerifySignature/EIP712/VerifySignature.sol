@@ -28,7 +28,10 @@ contract VerifySignature {
         owner = _owner;
     }
 
-    function permitApprove(uint256 _number, bytes memory signature) external returns(address signer) {
+    function permitApprove(
+        uint256 _number,
+        bytes memory signature
+    ) external returns (address signer) {
         require(signature.length == 65, "INVALID SIGNATURE LENGTH");
         bytes32 r;
         bytes32 s;

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.6.2/ethers.umd.js"
+            integrity="sha512-xRLhU6ytkazpYTgX6jB3iX2GQcNr90Hm4G8fGN0XxCB+OnVOHC9GeVFBdAIPC7VOcbbuD3DfxmvI8KUDQYdexw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script>
+            const { BrowserProvider, signTypedData } = ethers
+            const provider = new BrowserProvider(window.ethereum)
+
+            async function sig(spender) {
+                const signer = await provider.getSigner()
+                const network = await provider.getNetwork()
+                const block = await provider.getBlock()
+                const domain = {
+                    name: 'TZ',
+                    version: '1',
+                    chainId: Number(network.chainId),
+                    verifyingContract: spender
+                }
+
+                const types = {
+                    Permit: [
+                        { name: 'owner', type: 'address' },
+                        { name: 'spender', type: 'address' },
+                        { name: 'value', type: 'uint256' },
+                        { name: 'nonce', type: 'uint256' },
+                        { name: 'deadline', type: 'uint256' }
+                    ]
+                }
+
+                const message = {
+                    owner: signer.address,
+                    spender,
+                    value: 100,
+                    nonce: 0,
+                    deadline: block.timestamp
+                }
+                console.log(domain)
+                console.log(message)
+
+                const signature = await signer.signTypedData(domain, types, message)
+
+                console.log(signature)
+            }
+        </script>
+    </body>
+</html>
