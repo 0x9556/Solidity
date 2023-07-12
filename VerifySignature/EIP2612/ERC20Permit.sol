@@ -66,4 +66,8 @@ contract ERC20Permit  {
         nonce = _nonces[owner];
         _nonces[owner] += 1;
     }
+
+    function getChainId()external view returns(uint){
+        return block.chainid;
+    }
 }
