@@ -14,7 +14,7 @@
             referrerpolicy="no-referrer"
         ></script>
         <script>
-            const { BrowserProvider, signTypedData } = ethers
+            const { BrowserProvider, signTypedData,Signature } = ethers
             const provider = new BrowserProvider(window.ethereum)
 
             async function sig(spender) {
@@ -43,14 +43,14 @@
                     spender,
                     value: 100,
                     nonce: 0,
-                    deadline: block.timestamp
+                    deadline: 168916555
                 }
                 console.log(domain)
                 console.log(message)
 
-                const signature = await signer.signTypedData(domain, types, message)
+                const signature =Signature.from(await signer.signTypedData(domain, types, message))
 
-                console.log(signature)
+                console.log(signature.v,signature.r,signature.s)
             }
         </script>
     </body>
