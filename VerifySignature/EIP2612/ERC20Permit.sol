@@ -25,8 +25,8 @@ contract ERC20Permit  {
                 DOMAIN_TYPEHASH,
                 keccak256(bytes(name)),
                 keccak256(bytes("1")),
-                block.chainid,
-                address(this)
+                31337,
+                address(0x5FbDB2315678afecb367f032d93F642f64180aa3)
             )
         );
     }
